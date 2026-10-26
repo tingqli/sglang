@@ -442,6 +442,18 @@ class Fp8Config(QuantizationConfig):
 
                 return NPUW4A8MXFP4FusedMoEMethod(prefix=prefix)
 
+            # DSV4 keeps Fp8MoEMethod's native aiter MXFP4 path (padding, swiglu clamp).
+            if (
+                self.is_fp4_experts
+                and get_moe_runner_backend().is_aiter()
+                and not self.is_dsv4_fp4_experts
+            ):
+                from sglang.srt.layers.quantization.mxfp4_aiter_a16w4_moe import (
+                    Mxfp4AiterA16W4MoEMethod,
+                )
+
+                return Mxfp4AiterA16W4MoEMethod(fp8_method, prefix=prefix)
+
             if self.is_fp4_experts and get_moe_runner_backend().is_marlin():
                 from sglang.srt.layers.quantization.mxfp4_marlin_moe import (
                     Mxfp4MarlinMoEMethod,
