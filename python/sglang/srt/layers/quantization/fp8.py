@@ -2022,7 +2022,7 @@ class Fp8MoEMethod(FusedMoEMethodBase):
                 self._dequantize_aiter_fp4_experts(layer)
                 self.weight_block_size = [128, 128]
 
-                # gfx942/gfx950 native FP8 is e4m3fnuz, not e4m3fn.
+                # gfx94x consumes E4M3FNUZ weights with doubled scales.
                 if _is_fp8_fnuz:
                     w13_weight, w13_weight_scale, _ = normalize_e4m3fn_to_e4m3fnuz(
                         weight=layer.w13_weight,
@@ -2058,6 +2058,9 @@ class Fp8MoEMethod(FusedMoEMethodBase):
                     layer.w2_weight.data = shuffle_weight(
                         layer.w2_weight.contiguous(), (16, 16)
                     )
+                    layer.w13_weight.is_shuffled = True
+                    layer.w2_weight.is_shuffled = True
+                    layer._aiter_gate_up_interleaved = False
                 return
 
         if self.convert_mxfp8_to_block:

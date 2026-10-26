@@ -993,6 +993,7 @@ class Mxfp4MoEMethod(FusedMoEMethodBase):
                 and envs.SGLANG_USE_AITER_MOE_GU_ITLV.get()
                 and gate_up_interleaved
             )
+            print(f">>>>>>>>>>>> {gate_up_interleaved=} {use_aiter_gu_interleave=}")
             if use_aiter_gu_interleave:
                 layer.w13_weight.data = shuffle_weight_a16w4(layer.w13_weight, 16, True)
                 shuffled_w13_scale = shuffle_scale_a16w4(
